@@ -2,7 +2,6 @@ import React from 'react';
 import './App.css';
 // import ArcGISMap from 'esri/Map';
 // import MapView from 'esri/views/MapView';
-import Header from './Components/Header.js'
 import LatLong from './Components/LatLong.js'
 import { loadModules } from 'esri-loader';
 
@@ -56,13 +55,19 @@ class App extends React.Component {
         }
         //creating the attributes
         var pointAttr = {
-            Name: this.state.attrName,
-            Address: this.state.attrAdd
+            Name: this.state.name,
+            Address: this.state.address
         }
+        var popupTemplate = {
+          title: `Name of Point: ${this.state.name !== " " ? this.state.name : "No Name Defined."}`,
+          content: `<p> Address: ${this.state.address} </p>` +
+          `<p> ${this.state.lat}, ${this.state.long} </p>`
+      };
         let graphic = new Graphic({
             geometry:pointGeo,
             symbol:pointSymbol,
-            attributes:pointAttr
+            attributes:pointAttr,
+            popupTemplate:popupTemplate
         })
         // console.log(event)
         console.log(graphic)
@@ -70,43 +75,10 @@ class App extends React.Component {
     });
   }
 
-  // return a set of graphics to plot a point onto the map
-  createPipelineGraphics = () => {
-    // event.preventDefault()
-    loadModules([ 'esri/Graphic' ], {css:true})
-    .then(([Graphic]) => {
-      //creating the geography
-      var polylineGeo = {
-          type: "polyline", // autocasts as new Polyline()
-          paths: [[-111.3, 52.68], [-98, 49.5]]
-      }
-      //creating the symbol
-      var lineSymbol = {
-          type: "simple-line", // autocasts as new SimpleLineSymbol()
-          color: [226, 119, 40], // RGB color values as an array
-          width: 4
-      }
-      //creating the attributes
-      var lineAttr = {
-          Name: "Keystone Pipeline", // The name of the pipeline
-          Owner: "TransCanada", // The owner of the pipeline
-          Length: "3,456 km" // The length of the pipeline
-      }
-      var polylineGraphic = new Graphic({
-          geometry: polylineGeo, // Add the geometry created in step 4
-          symbol: lineSymbol, // Add the symbol created in step 5
-          attributes: lineAttr // Add the attributes created in step 6
-      })
-      console.log(polylineGraphic)
-      this.addGraphics(this.state.view, polylineGraphic)
-    });
-  }
-
-
   componentDidMount(){
     //lazy load the required ArcGIS API for JavaScript modules and CSS
     loadModules(['esri/Map','esri/views/MapView','esri/Graphic'], { css: true })
-    .then(([ArcGISMap, MapView, Graphic]) => {
+    .then(([ArcGISMap, MapView]) => {
     const map = new ArcGISMap({
         // basemap: 'topo-vector'
         basemap: 'streets'
@@ -116,7 +88,7 @@ class App extends React.Component {
         container: this.mapRef.current,
         map: map,
         center: [-95, 37],
-        zoom: 5
+        zoom: 4
         });
         
         // this.createPipelineGraphics()
@@ -144,25 +116,14 @@ class App extends React.Component {
     }
   }
 
-
   render(){
     return(
       <div>
-        <Header/>
-        
-        <div className="webmap" ref={this.mapRef}> 
-
-        </div>
-
+        {/* <Header/> */}
+        <br/>
+        <div className="webmap" ref={this.mapRef}/> 
         <LatLong lat={ this.updateLat } long={ this.updateLong }
         attrName={ this.updateName } attrAdd={ this.updateAdd } createPointGraphics={this.createPointGraphics} />
-
-        {console.log('view')}
-
-        {/* {console.log(this.state.lat)}
-        {console.log(this.state.long)} */}
-
-
       </div>
     )
   }

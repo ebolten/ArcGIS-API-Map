@@ -38,7 +38,13 @@
 }
 
 .webmap {
-  height: 800px;
+  border:groove;
+  position:relative;
+  right:-15%;
+  /* top:100px; */
+  height: 750px;
+  width:1225px;
+  margin:auto;
 }
 
 #lat-long{
